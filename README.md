@@ -51,3 +51,10 @@ El Gateway Central actúa como la **Base de Recarga y Transporte**.
 *   **Arquitectura LLM:** `tinyllm_decision_architecture.md`
 *   **Repositorio:** [https://github.com/yoqer/WarNet-Project](https://github.com/yoqer/WarNet-Project)
 *   **Licencia:** Apache License 2.0.    Sin Garantías ni responsabilidades por uso.
+
+
+_____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+
+# 6. Piezas 
+
+*    [**Adquisición de Piezas**](http://GitHub.com/yoqer/T4-Warnet-Project/)
