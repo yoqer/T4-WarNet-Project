@@ -66,5 +66,5 @@ ________________________________________________________________________________
       -Solo para uso propio, sin acceso al producto, solo lista imprimible.
 
     
-*    [**Realizar Pedido en Perplexity**](http://carlomaxxine.com/war/t4/cax.html)
-    -Recuerde guardar el archivo de adquisición de piezas para referencias.
+*    [**Realizar Pedido (Agentes)**](http://carlomaxxine.com/war/t4/cax.html)
+    -Recomendamos guardar el archivo de adquisición de piezas para referencias.
