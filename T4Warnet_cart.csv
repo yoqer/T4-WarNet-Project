@@ -1,0 +1,12 @@
+Incluir,ID,Componente,Cantidad,PrecioUnitario,Envio,SubtotalLinea,PlazoEntrega
+0,C1,Controlador Vuelo / Jammer Wi-Fi (ESP32-S3),1,0,0,=IF(A2=1;D2*E2+F2;0),"3-7 días"
+0,C2,Módulo Comunicación / Jammer RF (ESP32-C3),1,0,0,=IF(A3=1;D3*E3+F3;0),"1-5 días"
+0,C3,Módulo LoRaWAN (SX1276/SX1278),1,0,0,=IF(A4=1;D4*E4+F4;0),"7-14 días"
+0,C4,Módulo RF Espectro Amplio (CC1101),1,0,0,=IF(A5=1;D5*E5+F5;0),"5-10 días"
+0,C5,IMU MPU-6050,1,0,0,=IF(A6=1;D6*E6+F6;0),"3-7 días"
+0,C6,ESC 30A,4,0,0,=IF(A7=1;D7*E7+F7;0),"7-14 días"
+0,C7,Motores 2212 920KV,4,0,0,=IF(A8=1;D8*E8+F8;0),"7-20 días"
+0,C8,Gateway (Raspberry Pi 5 + LoRa HAT),1,0,0,=IF(A9=1;D9*E9+F9;0),"5-15 días"
+0,C9,MacroPad RP2040,1,0,0,=IF(A10=1;D10*E10+F10;0),"5-10 días"
+TOTAL,,,,,,=SUM(G2:G10),
+ 
