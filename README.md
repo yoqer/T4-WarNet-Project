@@ -62,7 +62,7 @@ ________________________________________________________________________________
   
 
 
-*    [**Descargar .Pdf**](https://github.com/yoqer/T4-WarNet-Project/blob/main/T4WarnetProjec.pdf)
+*    [**Ver para Descargar en Pdf**](https://github.com/yoqer/T4-WarNet-Project/blob/main/T4WarnetProject.pdf)
     
 
     
