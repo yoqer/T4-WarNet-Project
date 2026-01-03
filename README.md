@@ -63,8 +63,8 @@ ________________________________________________________________________________
 
 
 *    [**Ver Descarga en Pdf**](https://github.com/yoqer/T4-WarNet-Project/blob/main/T4WarnetProject.pdf)
-    
+      -Solo para uso propio, sin acceso al producto, solo lista imprimible.
 
     
 *    [**Realizar Pedido en Perplexity**](http://carlomaxxine.com/war/t4/cax.html)
-Recuerda guardar el archivo.
+    -Recuerde guardar el archivo de adquisición de piezas para referencias.
