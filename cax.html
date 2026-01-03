@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛒 Cesta T4 WarNet - Lista de Compra</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      max-width: 1200px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh; 
+    }
+    .container { background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); padding: 30px; }
+    h1 { text-align: center; color: #2c3e50; margin-bottom: 10px; font-size: 2em; }
+    .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 30px; }
+    .total-card { 
+      background: linear-gradient(45deg, #28a745, #20c997); 
+      color: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; 
+      text-align: center; font-size: 1.5em; font-weight: bold;
+    }
+    table { 
+      width: 100%; border-collapse: collapse; margin-bottom: 30px; 
+      background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    th { 
+      background: linear-gradient(45deg, #3498db, #2980b9); color: white; padding: 15px 10px; 
+      text-align: left; font-weight: 600; font-size: 0.9em;
+    }
+    td { padding: 15px 10px; border-bottom: 1px solid #ecf0f1; vertical-align: middle; }
+    tr:nth-child(even) { background: #f8f9fa; }
+    tr:hover { background: #e3f2fd; transform: scale(1.01); transition: all 0.2s; }
+    input[type="checkbox"] { transform: scale(1.5); margin-right: 10px; accent-color: #3498db; }
+    input[type="number"] { 
+      width: 90px; padding: 8px; border: 2px solid #ddd; border-radius: 8px; 
+      font-size: 16px; transition: border-color 0.3s;
+    }
+    input[type="number"]:focus { border-color: #3498db; outline: none; box-shadow: 0 0 0 3px rgba(52,152,219,0.1); }
+    .subtotal { font-weight: bold; color: #27ae60; font-size: 1.1em; }
+    .perplexity-btn { 
+      width: 100%; padding: 20px; font-size: 1.3em; background: linear-gradient(45deg, #e74c3c, #c0392b); 
+      color: white; border: none; border-radius: 15px; cursor: pointer; font-weight: bold;
+      transition: all 0.3s; box-shadow: 0 10px 30px rgba(231,76,60,0.4);
+    }
+    .perplexity-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(231,76,60,0.6); }
+    .perplexity-btn:active { transform: translateY(0); }
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      .container { padding: 20px; margin: 10px; }
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; }
+      tr { border: 1px solid #ccc; margin-bottom: 15px; padding: 15px; border-radius: 10px; }
+      td { border: none; position: relative; padding-left: 50%; text-align: right; }
+      td:before { content: attr(data-label); position: absolute; left: 10px; width: 45%; font-weight: bold; text-align: left; }
+      input[type="number"] { width: 100%; }
+      h1 { font-size: 1.5em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛒 Cesta T4 WarNet Project</h1>
+    <p class="subtitle">Selecciona productos, añade precios/envío y optimiza con Perplexity AI</p>
+    
+    <div class="total-card" id="total-card">
+      💰 Total pedido: <span id="total-display">0,00 €</span>
+    </div>
+
+    <table id="cart-table">
+      <thead>
+        <tr>
+          <th>✓</th><th>ID</th><th>Componente</th><th>Cant.</th><th>Precio (€)</th><th>Envío (€)</th><th>Subtotal</th><th>Plazo</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 20px;">
+            <button class="perplexity-btn" onclick="generarPromptPerplexity()">
+              🚀 Optimizar Precios con Perplexity AI
+            </button>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <script>
+    const productos = [
+      { id: "C1", nombre: "ESP32-S3 DevKitC (Controlador/Jammer WiFi)", cantidad: 1, plazo: "3-7 días" },
+      { id: "C2", nombre: "ESP32-C3 DevKitM (Jammer RF)", cantidad: 1, plazo: "1-5 días" },
+      { id: "C3", nombre: "LoRaWAN SX1276/78 Shield", cantidad: 1, plazo: "7-14 días" },
+      { id: "C4", nombre: "CC1101 RF Transceiver (433/868MHz)", cantidad: 1, plazo: "5-10 días" },
+      { id: "C5", nombre: "MPU-6050 IMU Sensor", cantidad: 1, plazo: "3-7 días" },
+      { id: "C6", nombre: "ESC 30A (x4)", cantidad: 4, plazo: "7-14 días" },
+      { id: "C7", nombre: "Motores 2212 920KV (x4)", cantidad: 4, plazo: "7-20 días" },
+      { id: "C8", nombre: "Raspberry Pi 5 + LoRa HAT", cantidad: 1, plazo: "5-15 días" },
+      { id: "C9", nombre: "Adafruit MacroPad RP2040", cantidad: 1, plazo: "5-10 días" }
+    ];
+
+    const tbody = document.querySelector("#cart-table tbody");
+    const totalDisplay = document.getElementById("total-display");
+    const totalCard = document.getElementById("total-card");
+
+    function crearFila(producto) {
+      const row = document.createElement("tr");
+      
+      // Checkbox
+      const cellCheckbox = document.createElement("td");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      cellCheckbox.appendChild(checkbox);
+      
+      // ID
+      const cellId = document.createElement("td"); cellId.textContent = producto.id; cellId.dataset.label = "ID:";
+      
+      // Nombre
+      const cellNombre = document.createElement("td"); 
+      cellNombre.textContent = producto.nombre; 
+      cellNombre.dataset.label = "Componente:";
+      
+      // Cantidad
+      const cellCantidad = document.createElement("td"); 
+      cellCantidad.textContent = producto.cantidad; 
+      cellCantidad.dataset.label = "Cantidad:";
+      
+      // Precio
+      const cellPrecio = document.createElement("td"); 
+      const inputPrecio = document.createElement("input");
+      inputPrecio.type = "number"; inputPrecio.min = "0"; inputPrecio.step = "0.01"; inputPrecio.value = "0";
+      inputPrecio.dataset.label = "Precio unitario:";
+      cellPrecio.appendChild(inputPrecio);
+      
+      // Envío
+      const cellEnvio = document.createElement("td"); 
+      const inputEnvio = document.createElement("input");
+      inputEnvio.type = "number"; inputEnvio.min = "0"; inputEnvio.step = "0.01"; inputEnvio.value = "0";
+      inputEnvio.dataset.label = "Envío:";
+      cellEnvio.appendChild(inputEnvio);
+      
+      // Subtotal
+      const cellSubtotal = document.createElement("td"); 
+      cellSubtotal.className = "subtotal"; 
+      cellSubtotal.textContent = "0,00"; 
+      cellSubtotal.dataset.label = "Subtotal:";
+      
+      // Plazo
+      const cellPlazo = document.createElement("td"); 
+      cellPlazo.textContent = producto.plazo; 
+      cellPlazo.dataset.label = "Plazo entrega:";
+
+      // Event listeners
+      [checkbox, inputPrecio, inputEnvio].forEach(el => {
+        el.addEventListener("input", () => calcularFila(row));
+      });
+
+      row.append(cellCheckbox, cellId, cellNombre, cellCantidad, cellPrecio, cellEnvio, cellSubtotal, cellPlazo);
+      return row;
+    }
+
+    function calcularFila(row) {
+      const checkbox = row.cells[0].querySelector("input[type='checkbox']");
+      const cantidad = parseFloat(row.cells[3].textContent) || 0;
+      const precio = parseFloat(row.cells[4].querySelector("input").value) || 0;
+      const envio = parseFloat(row.cells[5].querySelector("input").value) || 0;
+      
+      const subtotal = checkbox.checked ? (cantidad * precio + envio) : 0;
+      row.cells[6].textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
+      
+      calcularTotal();
+    }
+
+    function calcularTotal() {
+      let total = 0;
+      Array.from(tbody.rows).forEach(row => {
+        total += parseFloat(row.cells[6].textContent.replace(/[€,\s]/g, '')) || 0;
+      });
+      totalDisplay.textContent = total.toFixed(2).replace('.', ',') + ' €';
+      totalCard.style.transform = total > 0 ? 'scale(1.05)' : 'scale(1)';
+    }
+
+    function generarPromptPerplexity() {
+      const seleccionados = [];
+      Array.from(tbody.rows).forEach(row => {
+        const checkbox = row.cells[0].querySelector("input[type='checkbox']");
+        if (checkbox.checked) {
+          seleccionados.push({
+            id: row.cells[1].textContent,
+            nombre: row.cells[2].textContent,
+            cantidad: row.cells[3].textContent,
+            precio: row.cells[4].querySelector("input").value,
+            envio: row.cells[5].querySelector("input").value,
+            subtotal: row.cells[6].textContent,
+            plazo: row.cells[7].textContent
+          });
+        }
+      });
+
+      if (seleccionados.length === 0) {
+        alert('⚠️ Marca al menos un producto');
+        return;
+      }
+
+      const total = totalDisplay.textContent;
+      
+      const prompt = `🛒 OPTIMIZAR COMPRA T4 WARNET\n\n` +
+        `**SELECCIÓN ACTUAL (${seleccionados.length} productos, TOTAL: ${total})**\n\n` +
+        seleccionados.map(p => 
+          `• ${p.id}: ${p.nombre}\n  Cantidad: ${p.cantidad} | Precio: ${p.precio}€ | Envío: ${p.envio}€ | Subtotal: ${p.subtotal}`
+        ).join('\n\n') + 
+        `\n\n**TAREA:** Busca mejores precios en Amazon.es, PCComponentes, DigiKey EU, Mouser EU, AliExpress España.\n` +
+        `1. Precio unitario + envío por producto\n2. Plazos reales España\n3. Enlaces directos compra\n4. Combinación ÓPTIMA (menor coste + entrega)\n5. Tabla comparativa actual vs optimizado`;
+
+      // Copiar al portapapeles Y abrir Perplexity
+      navigator.clipboard.writeText(prompt).then(() => {
+        const url = `https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`;
+        window.open(url, '_blank');
+        // Mensaje visual
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✅ ¡Abriendo Perplexity con tu selección!';
+        btn.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+        }, 2000);
+      }).catch(() => {
+        window.open(`https://www.perplexity.ai/search?q=${encodeURIComponent(prompt)}`, '_blank');
+      });
+    }
+
+    // Inicializar tabla
+    productos.forEach(producto => {
+      tbody.appendChild(crearFila(producto));
+    });
+  </script>
+
+
+
+  
+</body>
+</html>
