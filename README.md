@@ -57,10 +57,8 @@ ________________________________________________________________________________
 
 # 6. Piezas 
 
-*    [**Adquisición de Piezas**]
-*    (http://GitHub.com/yoqer/T4-Warnet-Project/T4WarNetProject.md)
+*    [**Adquisición de Piezas**](http://GitHub.com/yoqer/T4-WarNet-Project/T4WarNetProject.md)
 
-*    [**Descargar .Pdf**](http://GitHub.com/
-*    yoqer/T4-Warnet-Project/T4WarNetProject.pdf)
+*    [**Descargar .Pdf**](http://GitHub.com/yoqer/T4-WarNet-Project/T4WarNetProject.pdf)
 
 *    [**Realizar Pedido**](http://GitHub.com/yoqer/T4-Warnet-Project/Lista de Compras_ T4 WarNet Project (Producción).md)
