@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛒 Cesta T4 WarNet - Con CSV Automático</title>
+  <style>
+    /* [Mismo CSS que antes - copiar del mensaje anterior] */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      max-width: 1200px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh; 
+    }
+    .container { background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); padding: 30px; }
+    h1 { text-align: center; color: #2c3e50; margin-bottom: 10px; font-size: 2em; }
+    .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 30px; }
+    .total-card { 
+      background: linear-gradient(45deg, #28a745, #20c997); 
+      color: white; padding: 20px; border-radius: 15px; margin-bottom: 30px; 
+      text-align: center; font-size: 1.5em; font-weight: bold;
+    }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 30px; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    th { background: linear-gradient(45deg, #3498db, #2980b9); color: white; padding: 15px 10px; text-align: left; font-weight: 600; font-size: 0.9em; }
+    td { padding: 15px 10px; border-bottom: 1px solid #ecf0f1; vertical-align: middle; }
+    tr:nth-child(even) { background: #f8f9fa; }
+    tr:hover { background: #e3f2fd; transform: scale(1.01); transition: all 0.2s; }
+    input[type="checkbox"] { transform: scale(1.5); margin-right: 10px; accent-color: #3498db; }
+    input[type="number"] { width: 90px; padding: 8px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; transition: border-color 0.3s; }
+    input[type="number"]:focus { border-color: #3498db; outline: none; box-shadow: 0 0 0 3px rgba(52,152,219,0.1); }
+    .subtotal { font-weight: bold; color: #27ae60; font-size: 1.1em; }
+    .csv-status { padding: 10px; margin-bottom: 20px; border-radius: 8px; text-align: center; font-weight: bold; }
+    .csv-loaded { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .csv-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .perplexity-btn { width: 100%; padding: 20px; font-size: 1.3em; background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; transition: all 0.3s; box-shadow: 0 10px 30px rgba(231,76,60,0.4); }
+    .perplexity-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(231,76,60,0.6); }
+    .load-csv-btn { background: linear-gradient(45deg, #17a2b8, #138496); margin-bottom: 20px; padding: 15px; font-size: 1.1em; }
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      .container { padding: 20px; margin: 10px; }
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; }
+      tr { border: 1px solid #ccc; margin-bottom: 15px; padding: 15px; border-radius: 10px; }
+      td { border: none; position: relative; padding-left: 50%; text-align: right; }
+      td:before { content: attr(data-label); position: absolute; left: 10px; width: 45%; font-weight: bold; text-align: left; }
+      input[type="number"] { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛒 Cesta T4 WarNet Project</h1>
+    <p class="subtitle">Carga precios desde CSV automáticamente + optimización Perplexity</p>
+    
+    <div class="total-card" id="total-card">
+      💰 Total pedido: <span id="total-display">0,00 €</span>
+    </div>
+
+    <button class="load-csv-btn perplexity-btn" onclick="cargarPreciosCSV()">
+      📊 Cargar Precios desde CSV GitHub
+    </button>
+    <div id="csv-status" class="csv-status" style="display: none;"></div>
+
+    <table id="cart-table">
+      <thead>
+        <tr>
+          <th>✓</th><th>ID</th><th>Componente</th><th>Cant.</th><th>Precio (€)</th><th>Envío (€)</th><th>Subtotal</th><th>Plazo</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 20px;">
+            <button class="perplexity-btn" onclick="generarPromptPerplexity()">
+              🚀 Optimizar Precios con Perplexity AI
+            </button>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <script>
+    const productos = [
+      { id: "C1", nombre: "ESP32-S3 DevKitC (Controlador/Jammer WiFi)", cantidad: 1, plazo: "3-7 días" },
+      { id: "C2", nombre: "ESP32-C3 DevKitM (Jammer RF)", cantidad: 1, plazo: "1-5 días" },
+      { id: "C3", nombre: "LoRaWAN SX1276/78 Shield", cantidad: 1, plazo: "7-14 días" },
+      { id: "C4", nombre: "CC1101 RF Transceiver (433/868MHz)", cantidad: 1, plazo: "5-10 días" },
+      { id: "C5", nombre: "MPU-6050 IMU Sensor", cantidad: 1, plazo: "3-7 días" },
+      { id: "C6", nombre: "ESC 30A (x4)", cantidad: 4, plazo: "7-14 días" },
+      { id: "C7", nombre: "Motores 2212 920KV (x4)", cantidad: 4, plazo: "7-20 días" },
+      { id: "C8", nombre: "Raspberry Pi 5 + LoRa HAT", cantidad: 1, plazo: "5-15 días" },
+      { id: "C9", nombre: "Adafruit MacroPad RP2040", cantidad: 1, plazo: "5-10 días" }
+    ];
+
+    const tbody = document.querySelector("#cart-table tbody");
+    const totalDisplay = document.getElementById("total-display");
+    const totalCard = document.getElementById("total-card");
+    const csvStatus = document.getElementById("csv-status");
+
+    // ⭐ FUNCIÓN PARA CARGAR CSV ⭐
+    async function cargarPreciosCSV() {
+      try {
+        csvStatus.textContent = "🔄 Cargando precios desde GitHub...";
+        csvStatus.className = "csv-status";
+        csvStatus.style.display = "block";
+        
+        const csvUrl = 'https://raw.githubusercontent.com/yoqer/T4-WarNet-Project/main/T4Warnet_cart.csv';
+        const response = await fetch(csvUrl);
+        
+        if (!response.ok) throw new Error('CSV no encontrado');
+        
+        const csvText = await response.text();
+        const lines = csvText.split('\n').filter(line => line.trim());
+        const precios = {};
+        
+        for (let i = 1; i < lines.length - 1; i++) {
+          const cols = lines[i].split(',');
+          if (cols.length >= 5) {
+            const id = cols[1]?.trim().replace(/"/g, '');
+            const precioUnitario = parseFloat(cols[4]) || 0;
+            const envio = parseFloat(cols[5]) || 0;
+            if (id) precios[id] = { precioUnitario, envio };
+          }
+        }
+        
+        // Aplicar precios
+        Array.from(tbody.rows).forEach(row => {
+          const id = row.cells[1].textContent;
+          const precioInput = row.cells[4].querySelector('input');
+          const envioInput = row.cells[5].querySelector('input');
+          
+          if (precios[id]) {
+            precioInput.value = precios[id].precioUnitario;
+            envioInput.value = precios[id].envio;
+            calcularFila(row);
+          }
+        });
+        
+        csvStatus.textContent = `✅ Precios cargados (${Object.keys(precios).length} productos)`;
+        csvStatus.className = "csv-status csv-loaded";
+        
+      } catch (error) {
+        csvStatus.textContent = "❌ Error CSV. Usa precios manuales.";
+        csvStatus.className = "csv-status csv-error";
+        console.error(error);
+      }
+    }
+
+    // [Resto de funciones: crearFila, calcularFila, calcularTotal, generarPromptPerplexity - igual que antes]
+    function crearFila(producto) {
+      const row = document.createElement("tr");
+      const cellCheckbox = document.createElement("td");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      cellCheckbox.appendChild(checkbox);
+      
+      const cellId = document.createElement("td"); cellId.textContent = producto.id; cellId.dataset.label = "ID:";
+      const cellNombre = document.createElement("td"); cellNombre.textContent = producto.nombre; cellNombre.dataset.label = "Componente:";
+      const cellCantidad = document.createElement("td"); cellCantidad.textContent = producto.cantidad; cellCantidad.dataset.label = "Cantidad:";
+      
+      const cellPrecio = document.createElement("td"); 
+      const inputPrecio = document.createElement("input");
+      inputPrecio.type = "number"; inputPrecio.min = "0"; inputPrecio.step = "0.01"; inputPrecio.value = "0";
+      cellPrecio.appendChild(inputPrecio); cellPrecio.dataset.label = "Precio:";
+      
+      const cellEnvio = document.createElement("td"); 
+      const inputEnvio = document.createElement("input");
+      inputEnvio.type = "number"; inputEnvio.min = "0"; inputEnvio.step = "0.01"; inputEnvio.value = "0";
+      cellEnvio.appendChild(inputEnvio); cellEnvio.dataset.label = "Envío:";
+      
+      const cellSubtotal = document.createElement("td"); cellSubtotal.className = "subtotal"; cellSubtotal.textContent = "0,00"; cellSubtotal.dataset.label = "Subtotal:";
+      const cellPlazo = document.createElement("td"); cellPlazo.textContent = producto.plazo; cellPlazo.dataset.label = "Plazo:";
+
+      [checkbox, inputPrecio, inputEnvio].forEach(el => el.addEventListener("input", () => calcularFila(row)));
+      row.append(cellCheckbox, cellId, cellNombre, cellCantidad, cellPrecio, cellEnvio, cellSubtotal, cellPlazo);
+      return row;
+    }
+
+    function calcularFila(row) {
+      const checkbox = row.cells[0].querySelector("input[type='checkbox']");
+      const cantidad = parseFloat(row.cells[3].textContent) || 0;
+      const precio = parseFloat(row.cells[4].querySelector("input").value) || 0;
+      const envio = parseFloat(row.cells[5].querySelector("input").value) || 0;
+      const subtotal = checkbox.checked ? (cantidad * precio + envio) : 0;
+      row.cells[6].textContent = subtotal.toFixed(2).replace('.', ',') + ' €';
+      calcularTotal();
+    }
+
+    function calcularTotal() {
+      let total = 0;
+      Array.from(tbody.rows).forEach(row => {
+        total += parseFloat(row.cells[6].textContent.replace(/[€,\s]/g, '')) || 0;
+      });
+      totalDisplay.textContent = total.toFixed(2).replace('.', ',') + ' €';
+    }
+
+    function generarPromptPerplexity() {
+      // [Igual que antes - copiar del mensaje anterior]
+      const seleccionados = [];
+      Array.from(tbody.rows).forEach(row => {
+        const checkbox = row.cells[0].querySelector("input[type='checkbox']");
+        if (checkbox.checked) {
+          seleccionados.push({
+            id: row.cells[1].textContent, nombre: row.cells[2].textContent,
+            cantidad: row.cells[3].textContent, precio: row.cells[4].querySelector("input").value,
+            envio: row.cells[5].querySelector("
