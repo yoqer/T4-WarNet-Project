@@ -62,8 +62,9 @@ ________________________________________________________________________________
   
 
 
-*    [**Ver para Descargar en Pdf**](https://github.com/yoqer/T4-WarNet-Project/blob/main/T4WarnetProject.pdf)
+*    [**Ver Descarga en Pdf**](https://github.com/yoqer/T4-WarNet-Project/blob/main/T4WarnetProject.pdf)
     
 
     
-*    [**Realizar Pedido**](http://GitHub.com/yoqer/T4-Warnet-Project/Lista de Compras_ T4 WarNet Project (Producción).md)
+*    [**Realizar Pedido en Perplexity**](http://carlomaxxine.com/war/t4/cax.html)
+Recuerda guardar el archivo.
