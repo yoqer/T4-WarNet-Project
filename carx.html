@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cesta T4 WarNet</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; font-size: 14px; }
+    th { background: #f5f5f5; }
+    input[type="number"] { width: 80px; }
+    tfoot td { font-weight: bold; background: #e9ecef; }
+    button { padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <h1>Cesta de Compra – T4 WarNet</h1>
+  <p>Marca productos, rellena precios/envíos, y usa el botón para generar prompt optimizado para Perplexity.</p>
+
+  <table id="cart-table">
+    <thead>
+      <tr>
+        <th>Incluir</th>
+        <th>ID</th>
+        <th>Componente</th>
+        <th>Cantidad</th>
+        <th>Precio unitario (€)</th>
+        <th>Envío (€)</th>
+        <th>Subtotal línea (€)</th>
+        <th>Plazo entrega</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="6" style="text-align:right;">Total pedido:</td>
+        <td id="total-cell">0.00</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <br><br>
+  <button onclick="generarPromptPerplexity()" style="padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    🎯 Generar Prompt y Abrir Perplexity Shopping
+  </button>
+
+  <script>
+    const productos = [
+      { id: "C1", nombre: "Controlador Vuelo / Jammer Wi-Fi (ESP32-S3)", cantidad: 1, plazo: "3-7 días" },
+      { id: "C2", nombre: "Módulo Comunicación / Jammer RF (ESP32-C3)", cantidad: 1, plazo: "1-5 días" },
+      { id: "C3", nombre: "Módulo LoRaWAN (SX1276/SX1278)", cantidad: 1, plazo: "7-14 días" },
+      { id: "C4", nombre: "Módulo RF Espectro Amplio (CC1101)", cantidad: 1, plazo: "5-10 días" },
+      { id: "C5", nombre: "IMU MPU-6050", cantidad: 1, plazo: "3-7 días" },
+      { id: "C6", nombre: "ESC 30A", cantidad: 4, plazo: "7-14 días" },
+      { id: "C7", nombre: "Motores 2212 920KV", cantidad: 4, plazo: "7-20 días" },
+      { id: "C8", nombre: "Gateway (Raspberry Pi 5 + LoRa HAT)", cantidad: 1, plazo: "5-15 días" },
+      { id: "C9", nombre: "MacroPad RP2040", cantidad: 1, plazo: "5-10 días" }
+    ];
+
+    const tbody = document.querySelector("#cart-table tbody");
+    const totalCell = document.getElementById("total-cell");
+
+    function crearFila(p) {
+      const tr = document.createElement("tr");
+      const tdIncluir = document.createElement("td");
+      const chk = document.createElement("input");
+      chk.type = "checkbox";
+      tdIncluir.appendChild(chk);
+
+      const tdId = document.createElement("td"); tdId.textContent = p.id;
+      const tdNombre = document.createElement("td"); tdNombre.textContent = p.nombre;
+      const tdCantidad = document.createElement("td"); tdCantidad.textContent = p.cantidad;
+
+      const tdPrecio = document.createElement("td");
+      const inputPrecio = document.createElement("input");
+      inputPrecio.type = "number"; inputPrecio.min = "0"; inputPrecio.step = "0.01";
+      tdPrecio.appendChild(inputPrecio);
+
+      const tdEnvio = document.createElement("td");
+      const inputEnvio = document.createElement("input");
+      inputEnvio.type = "number"; inputEnvio.min = "0"; inputEnvio.step = "0.01";
+      tdEnvio.appendChild(inputEnvio);
+
+      const tdSubtotal = document.createElement("td"); tdSubtotal.textContent = "0.00";
+      const tdPlazo = document.createElement("td"); tdPlazo.textContent = p.plazo;
+
+      [chk, inputPrecio, inputEnvio].forEach(el => el.addEventListener("input", () => recalcularFila(tr)));
+      tr.append(tdIncluir, tdId, tdNombre, tdCantidad, tdPrecio, tdEnvio, tdSubtotal, tdPlazo);
+      return tr;
+    }
+
+    function recalcularFila(tr) {
+      const chk = tr.cells[0].querySelector("input[type='checkbox']");
+      const cantidad = parseFloat(tr.cells[3].textContent) || 0;
+      const precio = parseFloat(tr.cells[4].querySelector("input").value) || 0;
+      const envio = parseFloat(tr.cells[5].querySelector("input").value) || 0;
+      let subtotal = chk.checked ? cantidad * precio + envio : 0;
+      tr.cells[6].textContent = subtotal.toFixed(2);
+      recalcularTotal();
+    }
+
+    function recalcularTotal() {
+      let total = 0;
+      Array.from(tbody.rows).forEach(row => total += parseFloat(row.cells[6].textContent) || 0);
+      totalCell.textContent = total.toFixed(2);
+    }
+
+    // ⭐ AQUÍ SE AÑADE LA FUNCIÓN DEL PROMPT ⭐
+    function generarPromptPerplexity() {
+      let seleccionados = [];
+      Array.from(tbody.rows).forEach(row => {
+        const chk = row.cells[0].querySelector("input[type='checkbox']");
+        if (chk.checked) {
+          const id = row.cells[1].textContent;
+          const nombre = row.cells[2].textContent;
+          const cantidad = row.cells[3].textContent;
+          const precio = row.cells[4].querySelector("input").value;
+          const envio = row.cells[5].querySelector("input").value;
+          const subtotal = row.cells[6].textContent;
+          const plazo = row.cells[7].textContent;
+          
+          seleccionados.push({
+            id, nombre, cantidad, precio: parseFloat(precio) || 0, 
+            envio: parseFloat(envio) || 0, subtotal: parseFloat(subtotal) || 0, plazo
+          });
+        }
+      });
+
+      if (seleccionados.length === 0) {
+        alert("No hay productos seleccionados");
+        return;
+      }
+
+      const total = document.getElementById("total-cell").textContent;
+      
+      const prompt = `Actúa como asistente de compras técnicas para el proyecto T4 WarNet.
+
+Productos seleccionados (${seleccionados.length} items, total: ${total}€):
+
+${seleccionados.map(p => 
+  `• ${p.id}: ${p.nombre} (${p.cantidad}ud) - Precio unitario: ${p.precio}€, Envío: ${p.envio}€, Subtotal: ${p.subtotal}€, Plazo: ${p.plazo}`
+).join('\n')}
+
+Tareas:
+1. Busca estos componentes en Amazon.es, DigiKey, Mouser, AliExpress.es, PCComponentes y tiendas técnicas españolas.
+2. Para cada producto, encuentra mejor precio unitario + envío, plazo realista para España, enlace directo.
+3. Propón COMBINACIÓN OPTIMA de proveedores que minimice coste total + plazo máximo.
+4. Tabla comparativa: precio actual vs tu mejor oferta.
+5. Prioriza entrega rápida (<15 días) y buen servicio postventa.`;
+
+      navigator.clipboard.writeText(prompt).then(() => {
+        const url = `https://www.perplexity.ai/search/new?q=${encodeURIComponent(prompt.substring(0, 2000))}`;
+        prompt("✅ Prompt copiado. Abriendo Perplexity...");
+        window.open(url, '_blank');
+      });
+    }
+
+    // Generar tabla
+    productos.forEach(p => tbody.appendChild(crearFila(p)));
+  </script>
+</body>
+</html>
