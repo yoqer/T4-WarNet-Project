@@ -67,4 +67,4 @@ ________________________________________________________________________________
 
     
 *    [**Realizar Pedido (Agentes)**](http://carlomaxxine.com/war/t4/cax.html)
-    -Recomendamos guardar el archivo de adquisición de piezas para referencias.
+    -Guardar archivo de adquisición de piezas para referencias.
