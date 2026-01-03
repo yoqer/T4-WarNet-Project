@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cesta T4 WarNet</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; font-size: 14px; }
+    th { background: #f5f5f5; }
+    input[type="number"] { width: 80px; }
+    tfoot td { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Cesta de Compra – T4 WarNet</h1>
+  <p>Marca los productos a incluir, rellena precios y envíos; los totales se calculan automáticamente en la tabla.</p>
+
+  <table id="cart-table">
+    <thead>
+      <tr>
+        <th>Incluir</th>
+        <th>ID</th>
+        <th>Componente</th>
+        <th>Cantidad</th>
+        <th>Precio unitario (€)</th>
+        <th>Envío (€)</th>
+        <th>Subtotal línea (€)</th>
+        <th>Plazo entrega</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filas generadas por JS -->
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="6" style="text-align:right;">Total pedido (productos + envío):</td>
+        <td id="total-cell">0.00</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <script>
+    const productos = [
+      { id: "C1", nombre: "Controlador Vuelo / Jammer Wi-Fi (ESP32-S3)", cantidad: 1, plazo: "3-7 días" },
+      { id: "C2", nombre: "Módulo Comunicación / Jammer RF (ESP32-C3)", cantidad: 1, plazo: "1-5 días" },
+      { id: "C3", nombre: "Módulo LoRaWAN (SX1276/SX1278)", cantidad: 1, plazo: "7-14 días" },
+      { id: "C4", nombre: "Módulo RF Espectro Amplio (CC1101)", cantidad: 1, plazo: "5-10 días" },
+      { id: "C5", nombre: "IMU MPU-6050", cantidad: 1, plazo: "3-7 días" },
+      { id: "C6", nombre: "ESC 30A", cantidad: 4, plazo: "7-14 días" },
+      { id: "C7", nombre: "Motores 2212 920KV", cantidad: 4, plazo: "7-20 días" },
+      { id: "C8", nombre: "Gateway (Raspberry Pi 5 + LoRa HAT)", cantidad: 1, plazo: "5-15 días" },
+      { id: "C9", nombre: "MacroPad RP2040", cantidad: 1, plazo: "5-10 días" }
+    ];
+
+    const tbody = document.querySelector("#cart-table tbody");
+    const totalCell = document.getElementById("total-cell");
+
+    function crearFila(p) {
+      const tr = document.createElement("tr");
+
+      const tdIncluir = document.createElement("td");
+      const chk = document.createElement("input");
+      chk.type = "checkbox";
+      tdIncluir.appendChild(chk);
+
+      const tdId = document.createElement("td");
+      tdId.textContent = p.id;
+
+      const tdNombre = document.createElement("td");
+      tdNombre.textContent = p.nombre;
+
+      const tdCantidad = document.createElement("td");
+      tdCantidad.textContent = p.cantidad;
+
+      const tdPrecio = document.createElement("td");
+      const inputPrecio = document.createElement("input");
+      inputPrecio.type = "number";
+      inputPrecio.min = "0";
+      inputPrecio.step = "0.01";
+      tdPrecio.appendChild(inputPrecio);
+
+      const tdEnvio = document.createElement("td");
+      const inputEnvio = document.createElement("input");
+      inputEnvio.type = "number";
+      inputEnvio.min = "0";
+      inputEnvio.step = "0.01";
+      tdEnvio.appendChild(inputEnvio);
+
+      const tdSubtotal = document.createElement("td");
+      tdSubtotal.textContent = "0.00";
+
+      const tdPlazo = document.createElement("td");
+      tdPlazo.textContent = p.plazo;
+
+      [chk, inputPrecio, inputEnvio].forEach(el => {
+        el.addEventListener("input", () => recalcularFila(tr));
+      });
+
+      tr.appendChild(tdIncluir);
+      tr.appendChild(tdId);
+      tr.appendChild(tdNombre);
+      tr.appendChild(tdCantidad);
+      tr.appendChild(tdPrecio);
+      tr.appendChild(tdEnvio);
+      tr.appendChild(tdSubtotal);
+      tr.appendChild(tdPlazo);
+
+      return tr;
+    }
+
+    function recalcularFila(tr) {
+      const chk = tr.cells[0].querySelector("input[type='checkbox']");
+      const cantidad = parseFloat(tr.cells[3].textContent) || 0;
+      const precio = parseFloat(tr.cells[4].querySelector("input").value) || 0;
+      const envio = parseFloat(tr.cells[5].querySelector("input").value) || 0;
+      let subtotal = 0;
+      if (chk.checked) {
+        subtotal = cantidad * precio + envio;
+      }
+      tr.cells[6].textContent = subtotal.toFixed(2);
+      recalcularTotal();
+    }
+
+    function recalcularTotal() {
+      let total = 0;
+      Array.from(tbody.rows).forEach(row => {
+        total += parseFloat(row.cells[6].textContent) || 0;
+      });
+      totalCell.textContent = total.toFixed(2);
+    }
+
+    productos.forEach(p => {
+      const fila = crearFila(p);
+      tbody.appendChild(fila);
+    });
+  </script>
+</body>
+</html>
