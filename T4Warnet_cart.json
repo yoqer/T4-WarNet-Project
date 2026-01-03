@@ -1,0 +1,83 @@
+[
+  {
+    "incluir": false,
+    "id": "C1",
+    "componente": "Controlador Vuelo / Jammer Wi-Fi (ESP32-S3)",
+    "cantidad": 1,
+    "precioUnitario": 0,
+    "envio": 0,
+    "plazoEntrega": "3-7 días"
+  },
+  {
+    "incluir": false,
+    "id": "C2",
+    "componente": "Módulo Comunicación / Jammer RF (ESP32-C3)",
+    "cantidad": 1,
+    "precioUnitario": 0,
+    "envio": 0,
+    "plazoEntrega": "1-5 días"
+  },
+  {
+    "incluir": false,
+    "id": "C3",
+    "componente": "Módulo LoRaWAN (SX1276/SX1278)",
+    "cantidad": 1,
+    "precioUnitario": 0,
+    "envio": 0,
+    "plazoEntrega": "7-14 días"
+  },
+  {
+    "incluir": false,
+    "id": "C4",
+    "componente": "Módulo RF Espectro Amplio (CC1101)",
+    "cantidad": 1,
+    "precioUnitario": 0,
+    "envio": 0,
+    "plazoEntrega": "5-10 días"
+  },
+  {
+    "incluir": false,
+    "id": "C5",
+    "componente": "IMU MPU-6050",
+    "cantidad": 1,
+    "precioUnitario": 0,
+    "envio": 0,
+    "plazoEntrega": "3-7 días"
+  },
+  {
+    "incluir": false,
+    "id": "C6",
+    "componente": "ESC 30A",
+    "cantidad": 4,
+    "precioUnitario": 0,
+    "envio": 0,
+    "plazoEntrega": "7-14 días"
+  },
+  {
+    "incluir": false,
+    "id": "C7",
+    "componente": "Motores 2212 920KV",
+    "cantidad": 4,
+    "precioUnitario": 0,
+    "envio": 0,
+    "plazoEntrega": "7-20 días"
+  },
+  {
+    "incluir": false,
+    "id": "C8",
+    "componente": "Gateway (Raspberry Pi 5 + LoRa HAT)",
+    "cantidad": 1,
+    "precioUnitario": 0,
+    "envio": 0,
+    "plazoEntrega": "5-15 días"
+  },
+  {
+    "incluir": false,
+    "id": "C9",
+    "componente": "MacroPad RP2040",
+    "cantidad": 1,
+    "precioUnitario": 0,
+    "envio": 0,
+    "plazoEntrega": "5-10 días"
+  }
+]
